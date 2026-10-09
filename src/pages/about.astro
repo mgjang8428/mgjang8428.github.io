@@ -1,15 +1,37 @@
 ---
-import AboutHeroImage from '../assets/mik-example-image.png';
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from "@/layouts/default/BaseHead.astro";
+
+import RootLayout from "@/layouts/RootLayout.astro";
+
+import Header from "@/layouts/default/Header.astro";
+import MainLayout from "@/layouts/default/MainLayout.astro";
+import AboutContents from "@/layouts/contents/AboutContents.astro";
+import Footer from "@/layouts/default/Footer.astro";
+
+const { title, description } = Astro.props;
 ---
 
-<Layout
-	title="소개"
-	description="소개"
-	pubDate={new Date('2026-10-08')}
-	heroImage={AboutHeroImage}
->
-	<p>
-		소개 페이지
-	</p>
-</Layout>
+<RootLayout>
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body>
+    <Header />
+    <MainLayout>
+      <div
+        class="sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto basis-1/5 hidden 2xl:block"
+      >
+      </div>
+      <div class="basis-3/5 max-w-5xl">
+        <AboutContents {...Astro.props}>
+          <slot />
+        </AboutContents>
+      </div>
+      <div
+        class="sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto basis-1/5 hidden 2xl:block"
+      >
+      </div>
+    </MainLayout>
+    <Footer />
+  </body>
+</RootLayout>

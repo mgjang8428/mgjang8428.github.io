@@ -1,0 +1,74 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+const minDepth = Math.min(...headings.map((h) => h.depth));
+---
+
+<aside>
+  {
+    headings.length > 0 && (
+      <nav class="toc" aria-label="목차">
+        <ul>
+          {headings.map((h) => (
+            <li style={`--level: ${h.depth - minDepth}`}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+
+  <style>
+    .toc ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .toc li {
+      margin: 0.4rem 0;
+      padding-left: calc(var(--level) * 0.9rem);
+      font-size: calc(1em - var(--level) * 0.02em);
+    }
+    .toc a {
+      color: inherit;
+      text-decoration: none;
+      opacity: 0.7;
+    }
+    .toc a:hover,
+    .toc a.active {
+      opacity: 1;
+      font-weight: 600;
+    }
+  </style>
+
+  <script>
+    const links = document.querySelectorAll<HTMLAnchorElement>(".toc a");
+    const targets = [...links]
+      .map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          links.forEach((a) => a.classList.remove("active"));
+          [...links]
+            .find(
+              (a) => decodeURIComponent(a.hash.slice(1)) === entry.target.id,
+            )
+            ?.classList.add("active");
+        }
+      },
+      { rootMargin: "0px 0px -70% 0px" }, // 화면 위쪽 30% 구간에 들어오면 활성화
+    );
+
+    targets.forEach((el) => observer.observe(el));
+  </script>
+</aside>
