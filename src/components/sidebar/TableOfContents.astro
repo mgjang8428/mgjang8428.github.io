@@ -10,7 +10,7 @@ const { headings } = Astro.props;
 const minDepth = Math.min(...headings.map((h) => h.depth));
 ---
 
-<aside>
+<aside class="bg-white">
   {
     headings.length > 0 && (
       <nav class="toc" aria-label="목차">

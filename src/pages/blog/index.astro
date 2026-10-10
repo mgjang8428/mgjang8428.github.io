@@ -7,6 +7,7 @@ import Header from "@/layouts/default/Header.astro";
 import MainLayout from "@/layouts/default/MainLayout.astro";
 import BlogIndexContents from "@/layouts/contents/BlogIndexContents.astro";
 import Footer from "@/layouts/default/Footer.astro";
+import Category from "@/components/sidebar/Category.astro";
 
 const { title, description } = Astro.props;
 ---
@@ -21,8 +22,9 @@ const { title, description } = Astro.props;
       <div
         class="sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto basis-1/5 hidden 2xl:block"
       >
+        <Category />
       </div>
-      <div class="basis-3/5 max-w-5xl">
+      <div class="flex justify-center basis-3/5 max-w-5xl">
         <BlogIndexContents {...Astro.props}>
           <slot />
         </BlogIndexContents>

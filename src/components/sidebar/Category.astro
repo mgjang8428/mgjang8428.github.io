@@ -1,0 +1,75 @@
+---
+import { getCollection } from "astro:content";
+
+const allPosts = await getCollection("blog");
+
+const categoryTree: Record<string, Set<string>> = {};
+
+allPosts.forEach((post) => {
+  const parent = post.data.category;
+  const child = post.data.subcategory;
+
+  if (!parent) return;
+
+  if (!categoryTree[parent]) {
+    categoryTree[parent] = new Set();
+  }
+
+  if (child) {
+    categoryTree[parent].add(child);
+  }
+});
+
+const sidebarItems = Object.entries(categoryTree).map(
+  ([parent, childrenSet]) => ({
+    parent,
+    children: Array.from(childrenSet),
+  }),
+);
+
+const pathParts = decodeURIComponent(Astro.url.pathname)
+  .split("/")
+  .filter(Boolean);
+const categoryIndex = pathParts.indexOf("category");
+const currentParent =
+  categoryIndex !== -1 ? pathParts[categoryIndex + 1] : undefined;
+const currentChild =
+  categoryIndex !== -1 ? pathParts[categoryIndex + 2] : undefined;
+---
+
+<aside class="bg-white">
+  <h2>Category</h2>
+  <ul>
+    <li>
+      <a href={`/blog`}>all</a>
+    </li>
+    {
+      sidebarItems.map(({ parent, children }) => (
+        <li>
+          {children.length === 0 ? (
+            <a href={`/blog/category/${parent}`}>{parent}</a>
+          ) : (
+            <details open={parent === currentParent}>
+              <summary>{parent}</summary>
+              <ul>
+                {children.map((child) => (
+                  <li>
+                    <a
+                      href={`/blog/category/${parent}/${child}`}
+                      class:list={{
+                        active:
+                          parent === currentParent && child === currentChild,
+                      }}
+                    >
+                      {child}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</aside>

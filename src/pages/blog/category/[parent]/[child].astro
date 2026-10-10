@@ -1,0 +1,69 @@
+---
+import { getCollection } from "astro:content";
+
+import BaseHead from "@/layouts/default/BaseHead.astro";
+import RootLayout from "@/layouts/RootLayout.astro";
+import Header from "@/layouts/default/Header.astro";
+import MainLayout from "@/layouts/default/MainLayout.astro";
+import BlogIndexContents from "@/layouts/contents/BlogIndexContents.astro";
+import Footer from "@/layouts/default/Footer.astro";
+import Category from "@/components/sidebar/Category.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+
+  const pairs = new Map<string, { parent: string; child: string }>();
+  posts.forEach(({ data }) => {
+    if (data.category && data.subcategory) {
+      pairs.set(`${data.category}/${data.subcategory}`, {
+        parent: data.category,
+        child: data.subcategory,
+      });
+    }
+  });
+
+  return [...pairs.values()].map(({ parent, child }) => ({
+    params: { parent, child },
+  }));
+}
+
+const { parent, child } = Astro.params;
+
+const allPosts = await getCollection("blog");
+const posts = allPosts
+  .filter(
+    (post) => post.data.category === parent && post.data.subcategory === child,
+  )
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const title = `${parent} / ${child}`;
+const description = `${parent} › ${child} 카테고리의 글 목록`;
+---
+
+<RootLayout>
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body>
+    <Header />
+    <MainLayout>
+      <div
+        class="sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto basis-1/5 hidden 2xl:block"
+      >
+        <Category />
+      </div>
+      <div class="flex justify-center basis-3/5 max-w-5xl">
+        <BlogIndexContents
+          title={title}
+          description={description}
+          posts={posts}
+        />
+      </div>
+      <div
+        class="sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto basis-1/5 hidden 2xl:block"
+      >
+      </div>
+    </MainLayout>
+  </body>
+  <Footer />
+</RootLayout>

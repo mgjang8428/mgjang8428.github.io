@@ -1,10 +1,18 @@
 ---
 import { Image } from "astro:assets";
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 
 import FormattedDate from "@/components/util/FormattedDate.astro";
 
-const posts = (await getCollection("blog")).sort(
+interface Props {
+  posts?: CollectionEntry<"blog">[];
+  title?: string;
+  description?: string;
+}
+
+const { posts: postsProp } = Astro.props;
+
+const posts = [...(postsProp ?? (await getCollection("blog")))].sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
@@ -13,7 +21,7 @@ const posts = (await getCollection("blog")).sort(
   <ul>
     {
       posts.map((post) => (
-        <li>
+        <li class="pb-10 mb-10 border">
           <a href={`/blog/${post.id}/`}>
             {post.data.heroImage && (
               <Image
