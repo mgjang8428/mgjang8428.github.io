@@ -8,7 +8,7 @@ heroImage: '../../assets/blog-placeholder-1.jpg'
 
 Antigravity App v2.32.1 버전 기준</br>
 
-1. Antigravity 홈페이지에서 Linux용 설치 파일 다운로드
+1. Antigravity 홈페이지에서 Linux용 설치 파일 다운로드   
 https://antigravity.google/download/
 
 2. 받은 파일을 압축해제
